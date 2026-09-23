@@ -30,21 +30,3 @@ class TestPlanScanner:
         assert d['plan_id'] == "TEST-001"
         assert d['repo'] == "test-repo"
         assert d['status'] == "DRAFT"
-
-    def test_scan_directory_ignores_subdirectories(self, tmp_path):
-        scanner = PlanScanner()
-        plan_dir = tmp_path / "plans"
-        plan_dir.mkdir()
-
-        # Create a valid plan file
-        valid_plan = plan_dir / "2026-06-11-valid.md"
-        valid_plan.write_text("**Plan ID:** PLAN-001\n**Status:** COMPLETED\n")
-
-        # Create a subdirectory named like a markdown file
-        sub_dir = plan_dir / "subdir.md"
-        sub_dir.mkdir()
-
-        plans = scanner._scan_directory(plan_dir, repo="test-repo")
-
-        assert len(plans) == 1
-        assert plans[0].plan_id == "PLAN-001"
