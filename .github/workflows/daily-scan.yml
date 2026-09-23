@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       total_plans: ${{ steps.check_plans.outputs.total_plans }}
+      publish_scan: ${{ steps.check_plans.outputs.publish_scan }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       
@@ -35,11 +36,11 @@ jobs:
         run: python -m organvm_scrutator.ci_guard data/indices/visibility-index.json >> "$GITHUB_OUTPUT"
       
       - name: Check for gaps
-        if: steps.check_plans.outputs.total_plans != '0'
+        if: steps.check_plans.outputs.publish_scan == 'true'
         run: organvm-scrutator gaps
       
       - name: Commit changes
-        if: steps.check_plans.outputs.total_plans != '0'
+        if: steps.check_plans.outputs.publish_scan == 'true'
         uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
         with:
           commit_message: "chore: daily scrutator scan"
@@ -47,7 +48,7 @@ jobs:
 
   dispatch:
     needs: scan
-    if: needs.scan.outputs.total_plans != '0'
+    if: needs.scan.outputs.publish_scan == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
