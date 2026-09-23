@@ -169,8 +169,21 @@ class PlanScanner:
             groups[date] = groups.get(date, 0) + 1
         return groups
     
-    def save_index(self, output_path: Optional[str] = None):
-        """Save index to file"""
+    def save_index(self, output_path: str | Path | None = None) -> str:
+        """
+        Save index to file as Markdown and write a sidecar JSON file beside it.
+
+        Args:
+            output_path: Primary destination path for the Markdown index.
+                         Defaults to SCRUTATOR_INDICES / 'visibility-index.md'.
+
+        Returns:
+            String representation of the primary output path.
+
+        Raises:
+            ValueError: If the primary output path has extension .json or collides
+                        with the sidecar JSON path.
+        """
         index = self.generate_index()
         
         if output_path is None:
@@ -178,18 +191,32 @@ class PlanScanner:
                 'SCRUTATOR_INDICES',
                 str(Path(__file__).parent.parent.parent.parent / 'data' / 'indices')
             ))
-            output_path = str(output_dir / 'visibility-index.md')
+            md_path = output_dir / 'visibility-index.md'
+        else:
+            md_path = Path(output_path)
+
+        if md_path.suffix.lower() == '.json':
+            raise ValueError(
+                f"Invalid primary output_path '{output_path}': primary path cannot be a .json file "
+                "or collide with sidecar JSON destination."
+            )
+
+        json_path = md_path.with_suffix('.json')
+
+        if md_path.resolve() == json_path.resolve():
+            raise ValueError(
+                f"Invalid primary output_path '{output_path}': primary path and sidecar JSON path collide."
+            )
         
         # Generate markdown index
         md = self._render_markdown(index)
-        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-        Path(output_path).write_text(md)
+        md_path.parent.mkdir(parents=True, exist_ok=True)
+        md_path.write_text(md)
         
-        # Also save JSON for programmatic access
-        json_path = output_path.replace('.md', '.json')
-        Path(json_path).write_text(json.dumps(index, indent=2))
+        # Save JSON for programmatic access
+        json_path.write_text(json.dumps(index, indent=2))
         
-        return output_path
+        return str(md_path)
     
     def _render_markdown(self, index: dict) -> str:
         """Render index as markdown"""
