@@ -27,8 +27,11 @@ def should_publish_scan(index_path: Path) -> bool:
 def main() -> int:
     if len(sys.argv) != 2:
         raise SystemExit("usage: python -m organvm_scrutator.ci_guard <visibility-index.json>")
-    total = read_total_plans(Path(sys.argv[1]))
+
+    index_path = Path(sys.argv[1])
+    total = read_total_plans(index_path)
     print(f"total_plans={total}")
+    print(f"publish_scan={'true' if total > 0 else 'false'}")
     return 0
 
 
