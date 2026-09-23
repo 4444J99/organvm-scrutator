@@ -14,10 +14,10 @@ jobs:
     outputs:
       total_plans: ${{ steps.check_plans.outputs.total_plans }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.11'
       
@@ -32,13 +32,7 @@ jobs:
 
       - name: Check total plans
         id: check_plans
-        run: |
-          if [ -f data/indices/visibility-index.json ]; then
-            TOTAL=$(jq -r '.total_plans // 0' data/indices/visibility-index.json)
-            echo "total_plans=$TOTAL" >> $GITHUB_OUTPUT
-          else
-            echo "total_plans=0" >> $GITHUB_OUTPUT
-          fi
+        run: python -m organvm_scrutator.ci_guard data/indices/visibility-index.json >> "$GITHUB_OUTPUT"
       
       - name: Check for gaps
         if: steps.check_plans.outputs.total_plans != '0'
@@ -46,7 +40,7 @@ jobs:
       
       - name: Commit changes
         if: steps.check_plans.outputs.total_plans != '0'
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
         with:
           commit_message: "chore: daily scrutator scan"
           file_pattern: "data/**"
@@ -56,10 +50,10 @@ jobs:
     if: needs.scan.outputs.total_plans != '0'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: '3.11'
       
@@ -70,7 +64,7 @@ jobs:
         run: organvm-scrutator dispatch --threshold 3
       
       - name: Commit inquiries
-        uses: stefanzweifel/git-auto-commit-action@v7
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
         with:
           commit_message: "chore: dispatch research inquiries"
           file_pattern: "data/**"
