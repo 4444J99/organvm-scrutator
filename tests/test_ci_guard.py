@@ -40,5 +40,5 @@ def test_daily_workflow_guards_all_mutating_followups():
     workflow = Path(__file__).parents[1] / ".github" / "workflows" / "daily-scan.yml"
     text = workflow.read_text()
 
-    assert text.count("if: steps.check_plans.outputs.total_plans != '0'") == 2
-    assert "if: needs.scan.outputs.total_plans != '0'" in text
+    assert text.count("if: steps.check_plans.outputs.publish_scan == 'true'") == 2
+    assert "if: needs.scan.outputs.publish_scan == 'true'" in text
