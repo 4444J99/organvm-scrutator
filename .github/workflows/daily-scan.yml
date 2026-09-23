@@ -11,6 +11,8 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    outputs:
+      total_plans: ${{ steps.check_plans.outputs.total_plans }}
     steps:
       - uses: actions/checkout@v7
       
@@ -27,11 +29,23 @@ jobs:
         run: |
           organvm-scrutator scan
           organvm-scrutator stats
+
+      - name: Check total plans
+        id: check_plans
+        run: |
+          if [ -f data/indices/visibility-index.json ]; then
+            TOTAL=$(jq -r '.total_plans // 0' data/indices/visibility-index.json)
+            echo "total_plans=$TOTAL" >> $GITHUB_OUTPUT
+          else
+            echo "total_plans=0" >> $GITHUB_OUTPUT
+          fi
       
       - name: Check for gaps
+        if: steps.check_plans.outputs.total_plans != '0'
         run: organvm-scrutator gaps
       
       - name: Commit changes
+        if: steps.check_plans.outputs.total_plans != '0'
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore: daily scrutator scan"
@@ -39,6 +53,7 @@ jobs:
 
   dispatch:
     needs: scan
+    if: needs.scan.outputs.total_plans != '0'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
