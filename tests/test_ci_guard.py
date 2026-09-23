@@ -40,7 +40,7 @@ def test_non_object_index_fails_with_validation_error(tmp_path: Path):
     index = tmp_path / "visibility-index.json"
     index.write_text('[]')
 
-    with pytest.raises(ValueError, match="non-negative integer"):
+    with pytest.raises(TypeError, match="non-negative integer"):
         read_total_plans(index)
 
 
