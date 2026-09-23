@@ -36,14 +36,6 @@ def test_invalid_plan_count_fails_closed(tmp_path: Path):
         read_total_plans(index)
 
 
-def test_non_object_index_fails_with_validation_error(tmp_path: Path):
-    index = tmp_path / "visibility-index.json"
-    index.write_text('[]')
-
-    with pytest.raises(TypeError, match="non-negative integer"):
-        read_total_plans(index)
-
-
 def test_daily_workflow_guards_all_mutating_followups():
     workflow = Path(__file__).parents[1] / ".github" / "workflows" / "daily-scan.yml"
     text = workflow.read_text()

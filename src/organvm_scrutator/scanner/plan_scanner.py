@@ -92,7 +92,12 @@ class PlanScanner:
         """Scan a single plan directory"""
         plans = []
         
+        if not plan_dir.exists() or not plan_dir.is_dir():
+            return plans
+
         for plan_file in plan_dir.glob('*.md'):
+            if not plan_file.is_file():
+                continue
             try:
                 metadata = self._parse_plan_file(plan_file, repo)
                 if metadata:

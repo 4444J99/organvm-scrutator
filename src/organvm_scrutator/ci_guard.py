@@ -1,9 +1,10 @@
 """Deterministic guard for the hosted daily scan workflow."""
 
+from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
-
 
 _INVALID_COUNT = "visibility index total_plans must be a non-negative integer"
 
