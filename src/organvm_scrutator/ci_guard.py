@@ -16,7 +16,7 @@ def read_total_plans(index_path: Path) -> int:
 
     payload = json.loads(index_path.read_text())
     if not isinstance(payload, dict):
-        raise TypeError(_INVALID_COUNT)
+        raise ValueError(_INVALID_COUNT)  # noqa: TRY004
 
     total = payload.get("total_plans", 0)
     if isinstance(total, bool) or not isinstance(total, int) or total < 0:
