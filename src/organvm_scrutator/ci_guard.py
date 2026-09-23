@@ -7,15 +7,21 @@ import sys
 from pathlib import Path
 
 
+_INVALID_COUNT = "visibility index total_plans must be a non-negative integer"
+
+
 def read_total_plans(index_path: Path) -> int:
     """Return the indexed plan count, treating a missing index as an empty scan."""
     if not index_path.is_file():
         return 0
 
     payload = json.loads(index_path.read_text())
+    if not isinstance(payload, dict):
+        raise ValueError(_INVALID_COUNT)
+
     total = payload.get("total_plans", 0)
     if isinstance(total, bool) or not isinstance(total, int) or total < 0:
-        raise ValueError("visibility index total_plans must be a non-negative integer")
+        raise ValueError(_INVALID_COUNT)
     return total
 
 
