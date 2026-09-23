@@ -25,5 +25,15 @@ jobs:
         run: python -m pip install -e '.[dev]'
       - name: Run full test suite
         run: pytest -q
+      - name: Lint bounded repair
+        run: ruff check src/organvm_scrutator/ci_guard.py tests/test_ci_guard.py
+      - name: Parse workflow YAML
+        run: |
+          python - <<'PY'
+          import yaml
+          for path in ('.github/workflows/daily-scan.yml', '.github/workflows/test.yml'):
+              with open(path, encoding='utf-8') as handle:
+                  yaml.safe_load(handle)
+          PY
       - name: Compile package sources
         run: python -m compileall -q src
