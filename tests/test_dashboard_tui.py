@@ -1,7 +1,6 @@
 """Tests for Dashboard TUI rendering."""
 
 from io import StringIO
-import pytest
 from rich.console import Console
 
 from organvm_scrutator.viz.dashboard import Dashboard
