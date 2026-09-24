@@ -54,7 +54,7 @@ class Dashboard:
         atoms = analyses.get('atoms', {})
         energy = analyses.get('energy', {})
         
-        grid = Table(show_header=False, pad=False)
+        grid = Table.grid()
         grid.add_column(width=20)
         grid.add_column(width=20)
         grid.add_column(width=20)
