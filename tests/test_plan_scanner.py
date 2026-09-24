@@ -30,3 +30,28 @@ class TestPlanScanner:
         assert d['plan_id'] == "TEST-001"
         assert d['repo'] == "test-repo"
         assert d['status'] == "DRAFT"
+
+    def test_scan_directory_skips_matching_directories(self, tmp_path, capsys):
+        """Ensure _scan_directory skips directories ending in .md without warning."""
+        plan_dir = tmp_path / "plans"
+        plan_dir.mkdir()
+
+        valid_plan = plan_dir / "valid_plan.md"
+        valid_plan.write_text("**Plan ID:** PLAN-001\n**Status:** ACTIVE\n")
+
+        dir_ending_in_md = plan_dir / "directory.md"
+        dir_ending_in_md.mkdir()
+
+        control_txt = plan_dir / "control.txt"
+        control_txt.write_text("Not a markdown plan file.")
+
+        scanner = PlanScanner()
+        plans = scanner._scan_directory(plan_dir, repo="test-repo")
+
+        assert len(plans) == 1
+        assert plans[0].plan_id == "PLAN-001"
+        assert plans[0].file_path == str(valid_plan)
+
+        captured = capsys.readouterr()
+        assert captured.out == ""
+        assert captured.err == ""

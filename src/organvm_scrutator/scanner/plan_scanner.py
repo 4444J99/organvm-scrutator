@@ -93,6 +93,8 @@ class PlanScanner:
         plans = []
         
         for plan_file in plan_dir.glob('*.md'):
+            if not plan_file.is_file():
+                continue
             try:
                 metadata = self._parse_plan_file(plan_file, repo)
                 if metadata:
