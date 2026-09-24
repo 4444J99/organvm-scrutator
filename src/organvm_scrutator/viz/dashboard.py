@@ -202,5 +202,7 @@ class Dashboard:
 </body>
 </html>"""
         
-        Path(output_path).write_text(html)
+        out_path = Path(output_path)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(html)
         return output_path
